@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfda4fae088b9524fb5f8903550b495a, type: 3}
+  m_Name: SimpleShoesData
+  m_EditorClassIdentifier: 
+  equipmentType: 4
+  equipmentIcon: {fileID: 0}
+  equipmentSMR: {fileID: 476768111212065417, guid: 43c9700b0b86aca4f82dd15a11c1459f, type: 3}
+  EquipmentName: Simple Shoes
+  equipmentHealth: 0
+  equipmentResistance: 0

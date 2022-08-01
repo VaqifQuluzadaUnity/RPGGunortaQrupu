@@ -1,12 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName ="NewDialogueData",menuName ="ScriptableObjects/DialogueData")]
+[CreateAssetMenu(fileName = "NewDialogueData", menuName = "ScriptableObjects/DialogueData")]
 public class DialogueDataSO : ScriptableObject
 {
-	public DialogueLine[] dialogueLines;
+	public DialogueLine dialogueLine;
 
+	public DialogueState[] nextStates;
 }
 
 
@@ -21,9 +20,18 @@ public class DialogueLine
 
 	public bool isMainCharacter;
 
-	[TextArea(5,10)]
+	[TextArea(5, 10)]
 	public string characterQuote;
 
 	public int dialogueLineDelay;
+
+}
+
+[System.Serializable]
+public class DialogueState
+{
+	public string stateQuestionQuote;
+
+	public DialogueDataSO nextState;
 
 }

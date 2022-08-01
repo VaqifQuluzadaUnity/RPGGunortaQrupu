@@ -10,6 +10,10 @@ public class DialogueController : MonoBehaviour
 	#region Params
 	[Header("Links")]
 
+	[SerializeField] private GameObject choiceButtonPrefab;
+
+	[SerializeField] private Transform choiceButtonParent;
+
   [SerializeField] private TMP_Text dialogueText;
 
   [SerializeField] private TMP_Text mainCharacterText;
@@ -42,50 +46,57 @@ public class DialogueController : MonoBehaviour
 	}
 	#endregion
 
-
-	IEnumerator PlayDialogueCoroutine(DialogueDataSO dialogueData)
+	private void PlayDialogue(DialogueDataSO dialogueData)
 	{
-		for(int i = 0; i < dialogueData.dialogueLines.Length; i++)
+		StartCoroutine(WriteDialogueQuoteToText(dialogueData));
+
+		for(int i = 0; i < choiceButtonParent.transform.childCount; i++)
 		{
-			dialogueText.text = "";
-
-			DialogueLine currrentLine = dialogueData.dialogueLines[i];
-
-			if (currrentLine.isMainCharacter)
-			{
-				mainCharacterText.gameObject.SetActive(true);
-
-				npcText.gameObject.SetActive(false);
-
-				mainCharacterText.text = currrentLine.characterName;
-			}
-			else
-			{
-				mainCharacterText.gameObject.SetActive(false);
-
-				npcText.gameObject.SetActive(true);
-
-				npcText.text = currrentLine.characterName;
-			}
-
-			for(int j = 0; j < currrentLine.characterQuote.Length; j++)
-			{
-				dialogueText.text += currrentLine.characterQuote[j];
-
-				yield return new WaitForSeconds(dialogueWriteDelay);
-			}
-
-			yield return new WaitForSeconds(currrentLine.dialogueLineDelay);
+			Destroy(choiceButtonParent.transform.GetChild(i).gameObject);
 		}
 	}
 
+	IEnumerator WriteDialogueQuoteToText(DialogueDataSO diaData)
+	{
+		dialogueText.text = "";
 
+		string charQuoute = diaData.characterDialogueLine.characterQuote;
+
+		for (int i = 0; i < charQuoute.Length; i++)
+		{
+			dialogueText.text += charQuoute[i];
+			yield return new WaitForSeconds(dialogueWriteDelay);
+		}
+
+		SpawnDialogueChoiceButtons(diaData);
+	}
+	
+	private void SpawnDialogueChoiceButtons(DialogueDataSO diaData)
+	{
+		for(int i = 0; i < diaData.dialogueChoiceStates.Length; i++)
+		{
+			GameObject choiceButtonInstance = Instantiate(choiceButtonPrefab,choiceButtonParent);
+
+			choiceButtonInstance.GetComponentInChildren<Text>().text =
+				diaData.dialogueChoiceStates[i].nextStatesChoiceTextString;
+
+			int index = i;
+			choiceButtonInstance.GetComponent<Button>()
+				.onClick.AddListener(delegate { OnChoiceButtonPressed(index,diaData); });
+		}
+	}
+
+	private void OnChoiceButtonPressed(int choiceIndex,DialogueDataSO dialogueData)
+	{
+		Debug.Log(choiceIndex);
+		PlayDialogue(dialogueData.dialogueChoiceStates[choiceIndex].nextStatesData);
+	}
 
 	#region Event Handlers
 
 	private void OnDialogueEnterEventHandler(OnDialogueEnterEvent eventDetails)
 	{
-		StartCoroutine(PlayDialogueCoroutine(eventDetails.DialogueData));
+		PlayDialogue(eventDetails.DialogueData);
 	}
 
 	#endregion

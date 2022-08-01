@@ -5,7 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName ="NewDialogueData",menuName ="ScriptableObjects/DialogueData")]
 public class DialogueDataSO : ScriptableObject
 {
-	public DialogueLine[] dialogueLines;
+	public DialogueLine characterDialogueLine;
+
+	public DialogueChoiceStateClass[] dialogueChoiceStates;
 
 }
 
@@ -26,4 +28,12 @@ public class DialogueLine
 
 	public int dialogueLineDelay;
 
+}
+
+[System.Serializable]
+public class DialogueChoiceStateClass
+{
+	public string nextStatesChoiceTextString;
+
+	public DialogueDataSO nextStatesData;
 }

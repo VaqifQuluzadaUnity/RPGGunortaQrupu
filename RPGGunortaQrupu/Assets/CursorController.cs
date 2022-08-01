@@ -25,11 +25,6 @@ public class CursorController : MonoBehaviour
 
 		if(Physics.Raycast(mousePosRay,out hit))
 		{
-			if (hit.collider.CompareTag("Enemy"))
-			{
-			}
-
-
 			switch (hit.collider.tag)
 			{
 				case "Enemy":
@@ -46,6 +41,10 @@ public class CursorController : MonoBehaviour
 					break;
 			}
 			
+		}
+		else
+		{
+			Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
 		}
 	}
 

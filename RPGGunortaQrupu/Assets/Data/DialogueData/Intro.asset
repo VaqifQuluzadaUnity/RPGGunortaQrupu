@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d4636b3c69e432489a189c8147e0ec4, type: 3}
+  m_Name: Intro
+  m_EditorClassIdentifier: 
+  characterDialogueLine:
+    characterName: Richard
+    characterIcon: {fileID: 0}
+    dialogueSFX: {fileID: 0}
+    isMainCharacter: 1
+    characterQuote: 'Lorem ipsum dolor sit amet
+
+      
+
+'
+    dialogueLineDelay: 0
+  dialogueChoiceStates:
+  - nextStatesChoiceTextString: Go
+    nextStatesData: {fileID: 11400000, guid: 079b8c2b50ba25547ac883e3d1534969, type: 2}
+  - nextStatesChoiceTextString: Dont go
+    nextStatesData: {fileID: 11400000, guid: ffd72d4bb29d08c48a594c0e8cc7e726, type: 2}

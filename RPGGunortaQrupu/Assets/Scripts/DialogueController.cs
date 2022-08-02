@@ -1,4 +1,5 @@
 using DynamicBox.EventManagement;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -20,10 +21,18 @@ public class DialogueController : MonoBehaviour
 
   [SerializeField] private Image npcImage;
 
+	[SerializeField] private Transform choiceButtonParent;
+
+	[SerializeField] private GameObject choiceButtonPrefab;
+
 	[Header("Parameters")]
 
 	[Range(0.0001f,0.9999f)]
 	[SerializeField] private float dialogueWriteDelay;
+
+	private IEnumerator dialoguePlayCoroutine;
+
+	private DialogueDataSO currentDialogueData;
 
 	#endregion
 
@@ -43,41 +52,7 @@ public class DialogueController : MonoBehaviour
 	#endregion
 
 
-	IEnumerator PlayDialogueCoroutine(DialogueDataSO dialogueData)
-	{
-		for(int i = 0; i < dialogueData.dialogueLines.Length; i++)
-		{
-			dialogueText.text = "";
-
-			DialogueLine currrentLine = dialogueData.dialogueLines[i];
-
-			if (currrentLine.isMainCharacter)
-			{
-				mainCharacterText.gameObject.SetActive(true);
-
-				npcText.gameObject.SetActive(false);
-
-				mainCharacterText.text = currrentLine.characterName;
-			}
-			else
-			{
-				mainCharacterText.gameObject.SetActive(false);
-
-				npcText.gameObject.SetActive(true);
-
-				npcText.text = currrentLine.characterName;
-			}
-
-			for(int j = 0; j < currrentLine.characterQuote.Length; j++)
-			{
-				dialogueText.text += currrentLine.characterQuote[j];
-
-				yield return new WaitForSeconds(dialogueWriteDelay);
-			}
-
-			yield return new WaitForSeconds(currrentLine.dialogueLineDelay);
-		}
-	}
+	
 
 
 
@@ -85,9 +60,74 @@ public class DialogueController : MonoBehaviour
 
 	private void OnDialogueEnterEventHandler(OnDialogueEnterEvent eventDetails)
 	{
-		StartCoroutine(PlayDialogueCoroutine(eventDetails.DialogueData));
+
+		dialoguePlayCoroutine = PlayDialogueState(eventDetails.DialogueData);
+
+		StartCoroutine(dialoguePlayCoroutine);
 	}
 
 	#endregion
 
+	IEnumerator PlayDialogueState(DialogueDataSO dialogueData)
+	{
+		currentDialogueData = dialogueData;
+
+		InvokeRepeating("CheckUserInput", 0, Time.deltaTime);
+
+		for(int i = 0; i < choiceButtonParent.childCount; i++)
+		{
+			Destroy(choiceButtonParent.GetChild(i).gameObject);
+		}
+
+		dialogueText.text = "";
+
+		string dialogueQuote = dialogueData.dialogueLine.characterQuote;
+
+		for (int i = 0; i < dialogueQuote.Length; i++)
+		{
+			dialogueText.text += dialogueQuote[i];
+
+			yield return new WaitForSeconds(dialogueWriteDelay);
+		}
+
+		CancelInvoke("CheckUserInput");
+
+		print("button spawn input");
+
+		SpawnChoiceButtons(dialogueData);
+	}
+
+	private void CheckUserInput()
+	{
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			StopCoroutine(dialoguePlayCoroutine);
+
+			dialogueText.text = currentDialogueData.dialogueLine.characterQuote;
+
+			print("Check user input button");
+
+			SpawnChoiceButtons(currentDialogueData);
+
+			CancelInvoke("CheckUserInput");
+		}
+	}
+
+	private void SpawnChoiceButtons(DialogueDataSO diaData)
+	{
+		foreach(DialogueState state in diaData.nextStates)
+		{
+			GameObject buttonInstance = Instantiate(choiceButtonPrefab, choiceButtonParent);
+
+			buttonInstance.GetComponentInChildren<Text>().text = state.stateQuote;
+
+			buttonInstance.GetComponent<Button>().onClick.AddListener(delegate { OnChoiceButtonPressed(state.nextState); });
+		}
+	}
+
+	private void OnChoiceButtonPressed(DialogueDataSO diaData)
+	{
+		dialoguePlayCoroutine = PlayDialogueState(diaData);
+		StartCoroutine(dialoguePlayCoroutine);
+	}
 }
